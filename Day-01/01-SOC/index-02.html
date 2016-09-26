@@ -110,7 +110,8 @@
 
 		function SalaryCalculatorView(calculator){
 			//Reacts to user actions
-			var self = this;
+			
+
 			var $root = this.$root = $("<div></div>");
 
 			$root.on('change', "#txtBasic" , function(){
@@ -136,13 +137,13 @@
 
 				
 			//Reacts to model changes
-			calculator.subscribe('any', function(){
-				self.render();
-			});
+			calculator.subscribe('any', (function(){
+				this.render();
+			}).bind(this));
 
 			
 
-			self.render = function(){
+			this.render = function(){
 				var templateHTML = $("#calculatorHandlebarTemplate").html();
 				var templateFn = Handlebars.compile(templateHTML);
 				this.$root.html(templateFn(calculator.toJson()));
