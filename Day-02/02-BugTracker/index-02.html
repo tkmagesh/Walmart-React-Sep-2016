@@ -69,6 +69,14 @@
 				}
 			}
 		}
+
+		var Bug = React.createClass({
+			render : function(){
+				return (
+					<li key={this.props.data.id}><span className="bugname" >{this.props.data.name}</span></li>
+				)
+			}
+		})
 		var BugTracker = React.createClass({
 			
 			onBtnAddNewClick : function(event){
@@ -85,7 +93,7 @@
 				}, 0);
 				var bugItems = bugs.map(function(bug){
 					return (
-						<li key={bug.id}><span className="bugname" >{bug.name}</span></li>
+						<Bug data={bug}></Bug>
 					)
 				});
 				return (
@@ -112,7 +120,7 @@
 			}
 		});
 
-		
+
 		var bugsCollection = new BugsCollection();
 
 		function reRender(){
