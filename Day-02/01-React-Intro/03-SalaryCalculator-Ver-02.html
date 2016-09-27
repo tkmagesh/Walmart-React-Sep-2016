@@ -80,60 +80,61 @@
 			
 		};
 		
-		var calculator = window.calculator = new SalaryCalculator();
+		
 
 		var SalaryCalculatorView = React.createClass({
-			getInitialState : function(){
-				return {}
-			},
+			
 			onBasicChange : function(event){
-				calculator.set('basic', parseInt(event.target.value));
+				this.props.model.set('basic', parseInt(event.target.value));
 			},
 			onHraChange : function(event){
-				calculator.set('hra', parseInt(event.target.value));
+				this.props.model.set('hra', parseInt(event.target.value));
 			},
 			onDaChange : function(event){
-				calculator.set('da', parseInt(event.target.value));
+				this.props.model.set('da', parseInt(event.target.value));
 			},
 			onTaxChange : function(event){
-				calculator.set('tax', parseInt(event.target.value));
+				this.props.model.set('tax', parseInt(event.target.value));
 			},
 			onCalculateClick : function(){
-				calculator.calculate();
+				this.props.model.calculate();
 			},
 			render : function(){
+				var modelData = this.props.model.toJson();
 				return (
 					<div>
 						<div className="field">
 							<label htmlFor="">Basic :</label>
-							<input type="text" ref="txtBasic" onChange={this.onBasicChange} value={calculator.toJson().basic}></input>
+							<input type="text" ref="txtBasic" onChange={this.onBasicChange} value={modelData.basic}></input>
 						</div>
 						<div className="field">
 							<label htmlFor="">HRA :</label>
-							<input type="text" ref="txtHra" onChange={this.onHraChange} value={calculator.toJson().hra}></input>
+							<input type="text" ref="txtHra" onChange={this.onHraChange} value={modelData.hra}></input>
 						</div>
 						<div className="field">
 							<label htmlFor="">DA :</label>
-							<input type="text" ref="txtDa" onChange={this.onDaChange} value={calculator.toJson().da}></input>
+							<input type="text" ref="txtDa" onChange={this.onDaChange} value={modelData.da}></input>
 						</div>
 						<div className="field">
 							<label htmlFor="">Tax %:</label>
-							<input type="range" ref="rangeTax" min="0" max="30" value={calculator.toJson().tax} onChange={this.onTaxChange}></input>
-							<span>{calculator.toJson().tax}</span>
+							<input type="range" ref="rangeTax" min="0" max="30" value={modelData.tax} onChange={this.onTaxChange}></input>
+							<span>{modelData.tax}</span>
 						</div>
 						<div className="field">
 							<input type="button" value="Calculate" ref="btnCalculate" onClick={this.onCalculateClick}></input>
 						</div>
 						<div className="field">
-							<div id="divResult">{calculator.toJson().salary}</div>
+							<div id="divResult">{modelData.salary}</div>
 						</div>
 					</div>
 				)
 			}
 		});
 		
+		var calculator = window.calculator = new SalaryCalculator();
 		function renderCalculator(){
-			ReactDOM.render(<SalaryCalculatorView></SalaryCalculatorView>, document.getElementById("content-1"));
+			ReactDOM.render(
+				<SalaryCalculatorView model={calculator}></SalaryCalculatorView>, document.getElementById("content-1"));
 		}
 		renderCalculator();
 		calculator.subscribe('any', renderCalculator)
