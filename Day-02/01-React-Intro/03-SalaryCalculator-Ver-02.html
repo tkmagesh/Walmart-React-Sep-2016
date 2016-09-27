@@ -101,8 +101,17 @@
 			},
 			render : function(){
 				var modelData = this.props.model.toJson();
+				var list = ['Pen', 'Pencil', 'Scribble Pad'];
+
+				var items = list.map(function(item){
+					return (<li>{item}</li>)
+				});
 				return (
 					<div>
+						<ol>
+							{items}
+						</ol>
+						
 						<div className="field">
 							<label htmlFor="">Basic :</label>
 							<input type="text" ref="txtBasic" onChange={this.onBasicChange} value={modelData.basic}></input>
