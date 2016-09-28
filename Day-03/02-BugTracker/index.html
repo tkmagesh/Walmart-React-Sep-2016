@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Bug Tracker</title>
+	<style>
+		section{
+			margin-bottom: 10px;
+		}
+		.closed{
+			color : red;
+			text-decoration: line-through;
+			font-style: italic;
+		}
+		.stats{
+			font-size: 22pt;
+		}
+		.bugname{
+			cursor: pointer;
+			font-size: 18pt;
+		}
+		ol{
+			width: 500px;
+			list-style: none;
+		}
+		li{
+			margin-bottom: 10px;
+			border-radius: 5px;
+			border : 1px solid gray;
+			background-color: #e7e7e7;
+			padding: 10px;
+		}
+	</style>
+	<script src="react.js"></script>
+	<script src="react-dom.js"></script>
+	<script src="browser.min.js"></script>
+
+	<script src="jquery-1.12.4.js"></script>
+	<script type="text/babel">
+		function BugsCollection(){
+			var _list = [
+				{id : 1, name : 'Bug - 1', isClosed : false},
+				{id : 2, name : 'Bug - 2', isClosed : true},
+			];
+
+			this.addNew = function(bugName){
+				var newBug = {
+					id : _list.reduce(function(result, bug){
+						return result > bug.id ? result : bug.id
+					}, 0) + 1,
+					name : bugName,
+					isClosed : false
+				}
+				_list.push(newBug);
+				if (typeof this.onListChange === 'function'){
+					this.onListChange();
+				}
+			};
+
+			this.toJson = function(){
+				return _list.slice(0);
+			};
+
+			this.removeClosed = function(){
+				
+				_list = _list.filter(function(bug){
+					return !bug.isClosed;
+				})
+				if (typeof this.onListChange === 'function'){
+					this.onListChange();
+				}
+			}
+		}
+		var Bug = React.createClass({
+			toggleBug : function(){
+				this.props.data.isClosed = !this.props.data.isClosed;
+			},
+			render : function(){
+				var style = "bugname " + (this.props.data.isClosed ? 'closed' : '');
+
+				return (
+					<li><span className={style} onClick={this.toggleBug}>{this.props.data.name}</span></li>
+				);
+			}
+		});
+		
+		var BugTracker = React.createClass({
+			
+			onBtnAddNewClick : function(event){
+				var newBugName = this.refs.txtBugName.value;
+				this.props.collection.addNew(newBugName)
+			},
+			onBtnRemoveClosedClick : function(event){
+				this.props.collection.removeClosed();
+			},
+			render : function(){
+				var bugs = this.props.collection.toJson();
+				var closedCount = bugs.reduce(function(result, bug){
+					return bug.isClosed ? ++result : result
+				}, 0);
+				var bugItems = bugs.map(function(bug){
+					return (
+						<Bug key={bug.id} data={bug}></Bug>
+					)
+				});
+				return (
+					<div className="content">
+						<section className="stats">
+							<span className="closed">{closedCount}</span>
+							<span> / </span>
+							<span>{bugs.length}</span>
+						</section>
+						<section className="edit">
+							<label htmlFor="">Bug :</label>
+							<input type="text" ref="txtBugName"  />
+							<input type="button" value="Add New" onClick={this.onBtnAddNewClick}/>
+						</section>
+						<section className="list">
+							<ol>
+								{bugItems}
+							</ol>
+							<input type="button" value="Remove Closed" onClick={this.onBtnRemoveClosedClick}/>
+						</section>
+					</div>
+
+				);
+			}
+		});
+
+		
+		var bugsCollection = window.bugsCollection = new BugsCollection();
+
+		function reRender(){
+			ReactDOM.render(<BugTracker collection={bugsCollection}></BugTracker>, document.getElementById("bugTracker"));
+		}
+		bugsCollection.onListChange = reRender;
+		reRender();
+	</script>
+</head>
+<body>
+	<h1>Bug Tracker</h1>
+	<hr>
+	<div id="bugTracker">
+		
+	</div>
+</body>
+</html>
+
